@@ -342,7 +342,7 @@
     onAuthStateChanged,
     signOut
   } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-  import { Purchases } from "https://esm.sh/@revenuecat/purchases-js@1.2.2";
+  import { Purchases } from "https://esm.sh/@revenuecat/purchases-js@1.73.2";
 
   // Firebase Web ve RevenueCat Web Billing yapılandırması (CASTCAR-KURULUM.md / WEB-SATIS.md)
   const CASTCAR_CONFIG = {
@@ -354,7 +354,7 @@
       messagingSenderId: "558756150596",
       appId: "1:558756150596:web:bd6653ecb05e8986832b11"
     },
-    revenueCatWebApiKey: "rcb_WEB_BILLING_API_KEY_TODO",
+    revenueCatWebApiKey: "rcb_iAoEeWKYfHJOWZiFJiqsWQLGIoxx",
     entitlementId: "premium"
   };
 
@@ -464,7 +464,12 @@
       return;
     }
     try {
-      purchases = Purchases.configure(CASTCAR_CONFIG.revenueCatWebApiKey, user.uid);
+      if (Purchases.isConfigured()) {
+        purchases = Purchases.getSharedInstance();
+        if (purchases.getAppUserId() !== user.uid) await purchases.changeUser(user.uid);
+      } else {
+        purchases = Purchases.configure({ apiKey: CASTCAR_CONFIG.revenueCatWebApiKey, appUserId: user.uid });
+      }
       const customerInfo = await purchases.getCustomerInfo();
       const activeEntitlement = customerInfo.entitlements.active[CASTCAR_CONFIG.entitlementId]
         || Object.values(customerInfo.entitlements.active)[0];
@@ -492,7 +497,7 @@
   }
 
   function planMeta(pkg) {
-    const id = (pkg.identifier || pkg.rcBillingProduct?.identifier || "").toLowerCase();
+    const id = (pkg.identifier || pkg.product?.identifier || "").toLowerCase();
     if (id.includes("week")) {
       return {
         titleEn: "Weekly", titleTr: "Haftalık",
@@ -525,17 +530,24 @@
     };
   }
 
+  function trialLengthDays(phase) {
+    const m = /^P(\d+)([DW])$/.exec(phase?.periodDuration || "");
+    if (!m) return 0;
+    return m[2] === "W" ? Number(m[1]) * 7 : Number(m[1]);
+  }
+
   function renderPlans(packages) {
     planListEl.innerHTML = "";
     if (!packages.length) {
       showStatus(checkoutStatus, t("No plans available right now.", "Şu anda uygun plan bulunamadı."), true);
       return;
     }
-    selectedPackage = packages.find((p) => (p.identifier || "").toLowerCase().includes("year")) || packages[0];
+    selectedPackage = packages.find((p) => /annual|year/.test((p.identifier || "").toLowerCase())) || packages[0];
 
     packages.forEach((pkg) => {
       const meta = planMeta(pkg);
-      const priceStr = pkg.rcBillingProduct?.currentPrice?.formattedPrice || "";
+      const priceStr = pkg.product?.price?.formattedPrice || "";
+      const trialDays = trialLengthDays(pkg.product?.freeTrialPhase);
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "plan-item" + (pkg === selectedPackage ? " selected" : "");
@@ -550,6 +562,7 @@
             <span lang="en">${meta.subEn}</span>
             <span lang="tr">${meta.subTr}</span>
           </div>
+          ${trialDays ? `<div class="plan-sub"><span lang="en">${trialDays}-day free trial, then ${priceStr} ${meta.periodEn}. Cancel anytime.</span><span lang="tr">${trialDays} gün ücretsiz, sonra ${priceStr} ${meta.periodTr}. İstediğiniz zaman iptal edin.</span></div>` : ""}
         </div>
         <div class="plan-price">
           ${priceStr}
