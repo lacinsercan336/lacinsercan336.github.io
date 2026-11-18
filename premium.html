@@ -340,7 +340,6 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
   import {
     getAuth,
-    sendSignInLinkToEmail,
     isSignInWithEmailLink,
     signInWithEmailLink,
     onAuthStateChanged,
@@ -365,6 +364,7 @@
       messagingSenderId: "558756150596",
       appId: "1:558756150596:web:bd6653ecb05e8986832b11"
     },
+    mailerUrl: "https://castcar-api.playgrator.com/v1/send-link",
     revenueCatWebApiKey: "rcb_iAoEeWKYfHJOWZiFJiqsWQLGIoxx",
     entitlementId: "premium"
   };
@@ -491,15 +491,21 @@
     }
     sendLinkBtn.disabled = true;
     try {
-      const actionCodeSettings = {
-        url: window.location.origin + "/premium.html",
-        handleCodeInApp: true
-        // Uygulama castcar-app.firebaseapp.com bağlantılarını Universal Link olarak açar.
-        // Web akışı uygulamanın sahiplenmediği bu Firebase Hosting alanını kullanır ki iPhone'da sayfa açılsın.
-        // TODO(kota): Blaze planına geçilip test edilince açılacak.
-        // linkDomain: "castcar-auth.playgrator.com"
-      };
-      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      // Firebase'in ücretsiz planı giriş e-postalarını günde 5 ile sınırladığı için bağlantıyı
+      // kendi servisimiz üretip gönderir (server/castcar-mailer).
+      const resp = await fetch(CASTCAR_CONFIG.mailerUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, platform: "web", lang: isTr() ? "tr" : "en" })
+      });
+      if (!resp.ok) {
+        const code = (await resp.json().catch(() => ({}))).error;
+        throw new Error(code === "rate_limited"
+          ? t("Too many attempts. Please wait a minute and try again.", "Çok fazla deneme yapıldı. Lütfen bir dakika bekleyip tekrar deneyin.")
+          : code === "invalid_email"
+            ? t("Please enter a valid email address.", "Lütfen geçerli bir e-posta adresi girin.")
+            : t("We couldn't send the email right now. Please try again shortly.", "E-posta şu anda gönderilemedi. Lütfen biraz sonra tekrar deneyin."));
+      }
       window.localStorage.setItem("castcar-web-auth-email", email);
       showStatus(
         authStatus,
