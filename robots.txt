@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /data/
 
-Sitemap: https://lacinsercan336.github.io/sitemap.xml
+Sitemap: https://castcar.playgrator.com/sitemap.xml

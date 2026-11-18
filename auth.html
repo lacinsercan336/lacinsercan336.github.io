@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CastCar — Sign In</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="apple-touch-icon" href="/assets/icon/icon-180.png">
+<meta name="theme-color" content="#22b04a">
+<script src="/js/lang.js"></script>
+<link rel="stylesheet" href="/css/site.css">
+<style>
+  .auth-box {
+    max-width: 480px;
+    margin: 64px auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .auth-box img {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    margin-bottom: 16px;
+  }
+  .auth-box h1 {
+    font-size: 26px;
+    margin: 0 0 10px;
+  }
+  .auth-box p {
+    color: var(--muted);
+    margin: 0 0 24px;
+    font-size: 16px;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background: linear-gradient(180deg, var(--green-1), var(--green-2));
+    color: #0b0f0d;
+    font-weight: 700;
+    font-size: 17px;
+    padding: 15px 22px;
+    border-radius: 14px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-secondary {
+    display: inline-block;
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 14px;
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/assets/icon/icon-192.png" alt="">CastCar</a>
+    <nav class="links">
+      <button class="lang-btn" type="button" onclick="castcarToggleLang()"><span lang="en">Türkçe</span><span lang="tr">English</span></button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="auth-box">
+    <img src="/assets/icon/icon-192.png" alt="CastCar">
+    <h1 lang="en">Complete Sign-In</h1>
+    <h1 lang="tr">Girişi Tamamla</h1>
+
+    <p lang="en">Tap the button below to open CastCar on your iPhone and finish signing in to your account.</p>
+    <p lang="tr">iPhone'unuzda CastCar uygulamasını açıp hesabınıza girişi tamamlamak için aşağıdaki düğmeye dokunun.</p>
+
+    <a id="open-app-btn" class="btn-primary" href="castcar://auth">
+      <span lang="en">Open in CastCar App</span>
+      <span lang="tr">Uygulamada Aç</span>
+    </a>
+
+    <a id="continue-web-btn" class="btn-secondary" href="/premium.html" style="display:none">
+      <span lang="en">Or continue on the web page</span>
+      <span lang="tr">Ya da web sayfasında devam et</span>
+    </a>
+
+    <p class="note-light" style="margin-top:20px;font-size:13px" lang="en">
+      Opened this email on a computer? Open the same email on your iPhone and tap the link there.
+    </p>
+    <p class="note-light" style="margin-top:20px;font-size:13px" lang="tr">
+      E-postayı bilgisayarda mı açtınız? Aynı e-postayı iPhone'unuzda açıp bağlantıya oradan dokunun.
+    </p>
+  </div>
+</main>
+
+<script>
+(function () {
+  var fullLink = window.location.href;
+  var deepLink = "castcar://auth?link=" + encodeURIComponent(fullLink);
+  var openBtn = document.getElementById("open-app-btn");
+  var webBtn = document.getElementById("continue-web-btn");
+  if (openBtn) openBtn.setAttribute("href", deepLink);
+
+  var webUrl = "/premium.html" + window.location.search;
+  if (webBtn) {
+    webBtn.setAttribute("href", webUrl);
+    webBtn.style.display = "inline-block";
+  }
+
+  try {
+    var hasWebSession = localStorage.getItem("castcar-web-auth-email");
+    if (hasWebSession && window.location.search.indexOf("oobCode=") !== -1) {
+      window.location.replace(webUrl);
+      return;
+    }
+  } catch (e) {}
+
+  var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+  if (isIOS && window.location.search.indexOf("oobCode=") !== -1) {
+    setTimeout(function () {
+      window.location.href = deepLink;
+    }, 250);
+  }
+})();
+</script>
+</body>
+</html>

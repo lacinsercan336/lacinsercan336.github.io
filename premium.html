@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CastCar Premium</title>
+<meta name="description" content="Get CastCar Premium: ad-free experience, unlimited high-quality CarPlay screen mirroring, and instant playback.">
+<link rel="canonical" href="https://castcar.playgrator.com/premium.html">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="apple-touch-icon" href="/assets/icon/icon-180.png">
+<meta name="theme-color" content="#22b04a">
+<script src="/js/lang.js"></script>
+<link rel="stylesheet" href="/css/site.css">
+<style>
+  .premium-wrap {
+    max-width: 680px;
+    margin: 40px auto 72px;
+    padding: 0 20px;
+  }
+  .premium-head {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .premium-head h1 {
+    font-size: clamp(28px, 5vw, 40px);
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .premium-head p {
+    color: var(--muted);
+    margin: 0;
+  }
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .panel h2 {
+    font-size: 20px;
+    margin: 0 0 12px;
+  }
+  .field-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .input-text {
+    width: 100%;
+    padding: 13px 15px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+    font: inherit;
+    font-size: 16px;
+  }
+  .btn-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 15px 22px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(180deg, var(--green-1), var(--green-2));
+    color: #0b0f0d;
+    font: inherit;
+    font-weight: 700;
+    font-size: 17px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .btn-cta:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .plan-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0 20px;
+  }
+  .plan-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    border: 2px solid var(--line);
+    background: var(--bg);
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    color: var(--ink);
+  }
+  .plan-item.selected {
+    border-color: var(--green-2);
+    background: color-mix(in srgb, var(--green-2) 10%, var(--card));
+  }
+  .plan-title {
+    font-weight: 700;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .plan-badge {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--green-2);
+    color: #fff;
+  }
+  .plan-sub {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .plan-price {
+    text-align: right;
+    font-weight: 800;
+    font-size: 19px;
+    white-space: nowrap;
+  }
+  .plan-period {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .waiver-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--muted);
+    margin: 14px 0 18px;
+    cursor: pointer;
+  }
+  .waiver-label input {
+    margin-top: 4px;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--green-2);
+    flex-shrink: 0;
+  }
+  .status-msg {
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14.5px;
+    margin-top: 12px;
+  }
+  .status-info {
+    background: color-mix(in srgb, var(--green-2) 15%, var(--card));
+    border: 1px solid var(--green-2);
+  }
+  .status-err {
+    background: rgba(220, 53, 69, 0.12);
+    border: 1px solid rgba(220, 53, 69, 0.45);
+    color: #ff6b6b;
+  }
+  .user-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: 14.5px;
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/assets/icon/icon-192.png" alt="">CastCar</a>
+    <nav class="links">
+      <a class="hide-sm" href="/"><span lang="en">Home</span><span lang="tr">Ana Sayfa</span></a>
+      <a href="/terms.html"><span lang="en">Terms</span><span lang="tr">Koşullar</span></a>
+      <a href="/privacy.html"><span lang="en">Privacy</span><span lang="tr">Gizlilik</span></a>
+      <button class="lang-btn" type="button" onclick="castcarToggleLang()"><span lang="en">Türkçe</span><span lang="tr">English</span></button>
+    </nav>
+  </div>
+</header>
+
+<main class="premium-wrap">
+  <div class="premium-head">
+    <h1>CastCar Premium</h1>
+    <p lang="en">Ad-free experience, unlimited high-quality CarPlay screen mirroring, and instant channel playback.</p>
+    <p lang="tr">Reklamsız deneyim, sınırsız yüksek kaliteli CarPlay ekran yansıtma ve beklemeden izleme.</p>
+  </div>
+
+  <!-- 1. Adım: E-posta ile Giriş -->
+  <section id="step-auth" class="panel">
+    <h2 lang="en">1. Sign in with your email</h2>
+    <h2 lang="tr">1. E-posta adresinizle giriş yapın</h2>
+    <p style="color:var(--muted);font-size:15px;margin:0 0 16px" lang="en">
+      We'll send a one-time sign-in link to your email—no password needed. Your purchase will be linked directly to this email.
+    </p>
+    <p style="color:var(--muted);font-size:15px;margin:0 0 16px" lang="tr">
+      E-postanıza tek kullanımlık bir giriş bağlantısı göndereceğiz — şifre gerekmez. Satın alımınız doğrudan bu e-posta hesabına tanımlanır.
+    </p>
+
+    <form id="auth-form" class="field-row">
+      <input id="email-input" class="input-text" type="email" autocomplete="email" required placeholder="ornek@eposta.com">
+      <button id="send-link-btn" class="btn-cta" type="submit">
+        <span lang="en">Send Sign-In Link</span>
+        <span lang="tr">Giriş Bağlantısı Gönder</span>
+      </button>
+    </form>
+
+    <div id="auth-status" class="status-msg" style="display:none"></div>
+  </section>
+
+  <!-- 2. Adım: Plan Seçimi ve Ödeme -->
+  <section id="step-plans" class="panel" style="display:none">
+    <div class="user-bar">
+      <div>
+        <span style="color:var(--muted)" lang="en">Signed in as:</span>
+        <span style="color:var(--muted)" lang="tr">Giriş yapılan hesap:</span>
+        <strong id="signed-email">—</strong>
+      </div>
+      <button id="signout-btn" class="btn-outline" type="button">
+        <span lang="en">Sign out</span>
+        <span lang="tr">Çıkış yap</span>
+      </button>
+    </div>
+
+    <!-- Zaten Premium ise gösterilecek kart (Çift ödeme koruması) -->
+    <div id="already-premium-box" style="display:none">
+      <h2 lang="en">Premium is active on your account</h2>
+      <h2 lang="tr">Hesabınızda Premium aktif</h2>
+      <p style="color:var(--muted)" lang="en">
+        Your account already has an active CastCar Premium entitlement. To activate it on your iPhone: open <strong>CastCar → Settings → Account</strong> and sign in with this email address.
+      </p>
+      <p style="color:var(--muted)" lang="tr">
+        Bu hesapta zaten aktif bir CastCar Premium yetkisi bulunuyor. iPhone'unuzda etkinleştirmek için: <strong>CastCar → Ayarlar → Hesap</strong> bölümüne girip bu e-posta adresiyle giriş yapın.
+      </p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px">
+        <a id="manage-sub-btn" class="btn-cta" href="#" target="_blank" rel="noopener" style="display:none;width:auto">
+          <span lang="en">Manage Subscription</span>
+          <span lang="tr">Aboneliği Yönet</span>
+        </a>
+        <a class="btn-outline" href="castcar://">
+          <span lang="en">Open CastCar App</span>
+          <span lang="tr">Uygulamayı Aç</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Aktif Premium yoksa plan seçimi -->
+    <div id="checkout-box">
+      <h2 lang="en">2. Choose your plan</h2>
+      <h2 lang="tr">2. Planınızı seçin</h2>
+
+      <div id="plan-list" class="plan-grid"></div>
+
+      <label class="waiver-label">
+        <input id="waiver-checkbox" type="checkbox" required>
+        <span lang="en">
+          I agree to the <a href="/terms.html" target="_blank">Terms of Use</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>, request immediate access to CastCar Premium digital content, and acknowledge that I thereby lose my statutory 14-day right of withdrawal.
+        </span>
+        <span lang="tr">
+          <a href="/terms.html" target="_blank">Kullanım Koşulları</a>'nı ve <a href="/privacy.html" target="_blank">Gizlilik Politikası</a>'nı kabul ediyorum; CastCar Premium dijital hizmetinin anında başlatılmasını talep ediyor ve bu nedenle 14 günlük yasal cayma hakkımdan feragat ettiğimi onaylıyorum.
+        </span>
+      </label>
+
+      <button id="pay-btn" class="btn-cta" type="button" disabled>
+        <span lang="en">Continue to Secure Payment (Stripe)</span>
+        <span lang="tr">Güvenli Ödemeye Geç (Stripe)</span>
+      </button>
+
+      <div id="checkout-status" class="status-msg" style="display:none"></div>
+    </div>
+  </section>
+
+  <!-- 3. Adım: Başarı Ekranı -->
+  <section id="step-success" class="panel" style="display:none">
+    <h2 lang="en">Premium Activated!</h2>
+    <h2 lang="tr">Premium Etkinleştirildi!</h2>
+    <p lang="en">
+      Your purchase is now linked to <strong id="success-email"></strong>. Follow this step on your iPhone to unlock Premium immediately:
+    </p>
+    <p lang="tr">
+      Satın alımınız <strong id="success-email-tr"></strong> hesabınıza tanımlandı. iPhone'unuzda Premium'u hemen açmak için şu adımı izleyin:
+    </p>
+
+    <div class="safety" style="margin:18px 0">
+      <strong lang="en">In the app: Settings ▸ Account ▸ Sign in with this email</strong>
+      <strong lang="tr">Uygulamada: Ayarlar ▸ Hesap ▸ bu e-postayla giriş yapın</strong>
+    </div>
+
+    <a class="btn-cta" href="castcar://">
+      <span lang="en">Open CastCar on iPhone</span>
+      <span lang="tr">iPhone'da CastCar'ı Aç</span>
+    </a>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <a href="/">CastCar</a>
+      <a href="/terms.html"><span lang="en">Terms of Use</span><span lang="tr">Kullanım Koşulları</span></a>
+      <a href="/privacy.html"><span lang="en">Privacy Policy</span><span lang="tr">Gizlilik Politikası</span></a>
+      <a href="mailto:lacinsercan6@gmail.com">lacinsercan6@gmail.com</a>
+    </div>
+    <p lang="en">© 2026 CastCar. Payments are securely processed via Stripe.</p>
+    <p lang="tr">© 2026 CastCar. Ödemeler Stripe altyapısıyla güvenle işlenir.</p>
+  </div>
+</footer>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+  import {
+    getAuth,
+    sendSignInLinkToEmail,
+    isSignInWithEmailLink,
+    signInWithEmailLink,
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+  import { Purchases } from "https://esm.sh/@revenuecat/purchases-js@1.2.2";
+
+  // Firebase Web ve RevenueCat Web Billing yapılandırması (CASTCAR-KURULUM.md / WEB-SATIS.md)
+  const CASTCAR_CONFIG = {
+    firebase: {
+      apiKey: "AIzaSyDbWUUGiewZU3Q5FwpHC6WWrwoMOua8jDA",
+      authDomain: "castcar-app.firebaseapp.com",
+      projectId: "castcar-app",
+      storageBucket: "castcar-app.firebasestorage.app",
+      messagingSenderId: "558756150596",
+      appId: "1:558756150596:web:bd6653ecb05e8986832b11"
+    },
+    revenueCatWebApiKey: "rcb_WEB_BILLING_API_KEY_TODO",
+    entitlementId: "premium"
+  };
+
+  const isTr = () => document.documentElement.getAttribute("data-lang") === "tr";
+  const t = (en, tr) => (isTr() ? tr : en);
+
+  const stepAuth = document.getElementById("step-auth");
+  const stepPlans = document.getElementById("step-plans");
+  const stepSuccess = document.getElementById("step-success");
+  const authForm = document.getElementById("auth-form");
+  const emailInput = document.getElementById("email-input");
+  const sendLinkBtn = document.getElementById("send-link-btn");
+  const authStatus = document.getElementById("auth-status");
+  const signedEmailEl = document.getElementById("signed-email");
+  const signoutBtn = document.getElementById("signout-btn");
+  const alreadyPremiumBox = document.getElementById("already-premium-box");
+  const manageSubBtn = document.getElementById("manage-sub-btn");
+  const checkoutBox = document.getElementById("checkout-box");
+  const planListEl = document.getElementById("plan-list");
+  const waiverCheckbox = document.getElementById("waiver-checkbox");
+  const payBtn = document.getElementById("pay-btn");
+  const checkoutStatus = document.getElementById("checkout-status");
+
+  function showStatus(el, msg, isError = false) {
+    el.textContent = msg;
+    el.className = "status-msg " + (isError ? "status-err" : "status-info");
+    el.style.display = "block";
+  }
+
+  const isConfigured = !CASTCAR_CONFIG.firebase.apiKey.endsWith("_TODO");
+  let auth = null;
+  let purchases = null;
+  let availablePackages = [];
+  let selectedPackage = null;
+
+  if (isConfigured) {
+    const app = initializeApp(CASTCAR_CONFIG.firebase);
+    auth = getAuth(app);
+
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+      let email = window.localStorage.getItem("castcar-web-auth-email");
+      if (!email) {
+        email = window.prompt(t("Please confirm your email address:", "Güvenlik için e-posta adresinizi tekrar girin:"));
+      }
+      if (email) {
+        signInWithEmailLink(auth, email, window.location.href)
+          .then(() => {
+            window.localStorage.removeItem("castcar-web-auth-email");
+            window.history.replaceState({}, document.title, window.location.pathname);
+          })
+          .catch((err) => showStatus(authStatus, err.message, true));
+      }
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        stepAuth.style.display = "none";
+        stepPlans.style.display = "block";
+        signedEmailEl.textContent = user.email || user.uid;
+        await loadRevenueCatForUser(user);
+      } else {
+        stepAuth.style.display = "block";
+        stepPlans.style.display = "none";
+        stepSuccess.style.display = "none";
+      }
+    });
+  }
+
+  authForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim().toLowerCase();
+    if (!email) return;
+    if (!auth) {
+      showStatus(authStatus, t("Web checkout is being configured. Please try again shortly.", "Web ödeme sistemi yapılandırılıyor. Lütfen biraz sonra tekrar deneyin."), true);
+      return;
+    }
+    sendLinkBtn.disabled = true;
+    try {
+      const actionCodeSettings = {
+        url: window.location.origin + "/premium.html",
+        handleCodeInApp: true
+      };
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      window.localStorage.setItem("castcar-web-auth-email", email);
+      showStatus(
+        authStatus,
+        t(
+          "Sign-in link sent to " + email + ". Click the link in your email to continue.",
+          email + " adresine giriş bağlantısı gönderildi. Devam etmek için e-postanızdaki bağlantıya tıklayın."
+        ),
+        false
+      );
+    } catch (err) {
+      showStatus(authStatus, err.message, true);
+    } finally {
+      sendLinkBtn.disabled = false;
+    }
+  });
+
+  signoutBtn.addEventListener("click", async () => {
+    if (auth) await signOut(auth);
+  });
+
+  async function loadRevenueCatForUser(user) {
+    if (CASTCAR_CONFIG.revenueCatWebApiKey.endsWith("_TODO")) {
+      showStatus(checkoutStatus, t("Payment catalog is being configured.", "Ödeme kataloğu yapılandırılıyor."), true);
+      return;
+    }
+    try {
+      purchases = Purchases.configure(CASTCAR_CONFIG.revenueCatWebApiKey, user.uid);
+      const customerInfo = await purchases.getCustomerInfo();
+      const activeEntitlement = customerInfo.entitlements.active[CASTCAR_CONFIG.entitlementId]
+        || Object.values(customerInfo.entitlements.active)[0];
+
+      if (activeEntitlement) {
+        alreadyPremiumBox.style.display = "block";
+        checkoutBox.style.display = "none";
+        if (customerInfo.managementURL) {
+          manageSubBtn.href = customerInfo.managementURL;
+          manageSubBtn.style.display = "inline-flex";
+        }
+        return;
+      }
+
+      alreadyPremiumBox.style.display = "none";
+      checkoutBox.style.display = "block";
+
+      const offerings = await purchases.getOfferings();
+      const current = offerings.current;
+      availablePackages = current ? current.availablePackages : [];
+      renderPlans(availablePackages);
+    } catch (err) {
+      showStatus(checkoutStatus, err.message || String(err), true);
+    }
+  }
+
+  function planMeta(pkg) {
+    const id = (pkg.identifier || pkg.rcBillingProduct?.identifier || "").toLowerCase();
+    if (id.includes("week")) {
+      return {
+        titleEn: "Weekly", titleTr: "Haftalık",
+        subEn: "Renews every week", subTr: "Her hafta yenilenir",
+        periodEn: "/ week", periodTr: "/ hafta",
+        badgeEn: null, badgeTr: null
+      };
+    }
+    if (id.includes("month")) {
+      return {
+        titleEn: "Monthly", titleTr: "Aylık",
+        subEn: "Renews every month", subTr: "Her ay yenilenir",
+        periodEn: "/ month", periodTr: "/ ay",
+        badgeEn: null, badgeTr: null
+      };
+    }
+    if (id.includes("lifetime") || id.includes("full")) {
+      return {
+        titleEn: "Full Ad-Free (Lifetime)", titleTr: "Full Reklamsız (Ömür Boyu)",
+        subEn: "One-time payment, lifetime access", subTr: "Tek seferlik ödeme, ömür boyu",
+        periodEn: "one-time", periodTr: "tek sefer",
+        badgeEn: "Lifetime", badgeTr: "Ömür boyu"
+      };
+    }
+    return {
+      titleEn: "Yearly", titleTr: "Yıllık",
+      subEn: "Renews every year", subTr: "Her yıl yenilenir",
+      periodEn: "/ year", periodTr: "/ yıl",
+      badgeEn: "Most popular", badgeTr: "En popüler"
+    };
+  }
+
+  function renderPlans(packages) {
+    planListEl.innerHTML = "";
+    if (!packages.length) {
+      showStatus(checkoutStatus, t("No plans available right now.", "Şu anda uygun plan bulunamadı."), true);
+      return;
+    }
+    selectedPackage = packages.find((p) => (p.identifier || "").toLowerCase().includes("year")) || packages[0];
+
+    packages.forEach((pkg) => {
+      const meta = planMeta(pkg);
+      const priceStr = pkg.rcBillingProduct?.currentPrice?.formattedPrice || "";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "plan-item" + (pkg === selectedPackage ? " selected" : "");
+      btn.innerHTML = `
+        <div>
+          <div class="plan-title">
+            <span lang="en">${meta.titleEn}</span>
+            <span lang="tr">${meta.titleTr}</span>
+            ${meta.badgeEn ? `<span class="plan-badge"><span lang="en">${meta.badgeEn}</span><span lang="tr">${meta.badgeTr}</span></span>` : ""}
+          </div>
+          <div class="plan-sub">
+            <span lang="en">${meta.subEn}</span>
+            <span lang="tr">${meta.subTr}</span>
+          </div>
+        </div>
+        <div class="plan-price">
+          ${priceStr}
+          <span class="plan-period"><span lang="en">${meta.periodEn}</span><span lang="tr">${meta.periodTr}</span></span>
+        </div>
+      `;
+      btn.addEventListener("click", () => {
+        selectedPackage = pkg;
+        Array.from(planListEl.children).forEach((c) => c.classList.remove("selected"));
+        btn.classList.add("selected");
+        updatePayButtonState();
+      });
+      planListEl.appendChild(btn);
+    });
+    updatePayButtonState();
+  }
+
+  function updatePayButtonState() {
+    payBtn.disabled = !(selectedPackage && waiverCheckbox.checked);
+  }
+
+  waiverCheckbox.addEventListener("change", updatePayButtonState);
+
+  payBtn.addEventListener("click", async () => {
+    if (!purchases || !selectedPackage || !waiverCheckbox.checked) return;
+    payBtn.disabled = true;
+    checkoutStatus.style.display = "none";
+    try {
+      const user = auth?.currentUser;
+      await purchases.purchase({
+        rcPackage: selectedPackage,
+        customerEmail: user?.email || undefined
+      });
+      stepPlans.style.display = "none";
+      stepSuccess.style.display = "block";
+      document.getElementById("success-email").textContent = user?.email || "";
+      document.getElementById("success-email-tr").textContent = user?.email || "";
+    } catch (err) {
+      if (err && err.errorCode === 1) {
+        // Kullanıcı ödeme penceresini kapattı
+      } else {
+        showStatus(checkoutStatus, err.message || String(err), true);
+      }
+    } finally {
+      updatePayButtonState();
+    }
+  });
+</script>
+</body>
+</html>
