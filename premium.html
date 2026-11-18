@@ -213,7 +213,11 @@
   </div>
 
   <!-- 1. Adım: E-posta ile Giriş -->
-  <section id="step-auth" class="panel">
+  <section id="step-loading" class="panel" style="text-align:center;color:var(--muted)">
+    <span lang="en">Loading…</span><span lang="tr">Yükleniyor…</span>
+  </section>
+
+  <section id="step-auth" class="panel" style="display:none">
     <h2 lang="en">1. Sign in with your email</h2>
     <h2 lang="tr">1. E-posta adresinizle giriş yapın</h2>
     <p style="color:var(--muted);font-size:15px;margin:0 0 16px" lang="en">
@@ -224,7 +228,7 @@
     </p>
 
     <form id="auth-form" class="field-row">
-      <input id="email-input" class="input-text" type="email" autocomplete="email" required placeholder="ornek@eposta.com">
+      <input id="email-input" class="input-text" type="email" autocomplete="email" required placeholder="email@example.com">
       <button id="send-link-btn" class="btn-cta" type="submit">
         <span lang="en">Send Sign-In Link</span>
         <span lang="tr">Giriş Bağlantısı Gönder</span>
@@ -333,7 +337,7 @@
 </footer>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
   import {
     getAuth,
     sendSignInLinkToEmail,
@@ -341,8 +345,15 @@
     signInWithEmailLink,
     onAuthStateChanged,
     signOut
-  } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-  import { Purchases } from "https://esm.sh/@revenuecat/purchases-js@1.73.2";
+  } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+  // RevenueCat kütüphanesi giriş sonrası yüklenir; oturum geri yüklemesini bekletmesin.
+  let PurchasesLib = null;
+  async function getPurchasesLib() {
+    if (!PurchasesLib) {
+      PurchasesLib = (await import("https://esm.sh/@revenuecat/purchases-js@1.73.2")).Purchases;
+    }
+    return PurchasesLib;
+  }
 
   // Firebase Web ve RevenueCat Web Billing yapılandırması (CASTCAR-KURULUM.md / WEB-SATIS.md)
   const CASTCAR_CONFIG = {
@@ -362,6 +373,7 @@
   const t = (en, tr) => (isTr() ? tr : en);
 
   const stepAuth = document.getElementById("step-auth");
+  const stepLoading = document.getElementById("step-loading");
   const stepPlans = document.getElementById("step-plans");
   const stepSuccess = document.getElementById("step-success");
   const authForm = document.getElementById("auth-form");
@@ -386,30 +398,72 @@
 
   const isConfigured = !CASTCAR_CONFIG.firebase.apiKey.endsWith("_TODO");
   let auth = null;
+  let pendingLink = null;
+
+  function sendLinkBtnLabel(confirmMode) {
+    sendLinkBtn.innerHTML = confirmMode
+      ? '<span lang="en">Finish Sign-In</span><span lang="tr">Girişi Tamamla</span>'
+      : '<span lang="en">Send Sign-In Link</span><span lang="tr">Giriş Bağlantısı Gönder</span>';
+  }
+
+  async function completeLinkSignIn(email) {
+    const link = pendingLink;
+    sendLinkBtn.disabled = true;
+    try {
+      await signInWithEmailLink(auth, email, link);
+      window.localStorage.removeItem("castcar-web-auth-email");
+    } catch (err) {
+      const code = err && err.code;
+      let msg;
+      if (code === "auth/invalid-action-code" || code === "auth/expired-action-code") {
+        msg = t("This sign-in link has expired or was already used. Enter your email to get a new one.",
+                "Bu giriş bağlantısının süresi dolmuş ya da daha önce kullanılmış. Yeni bağlantı için e-postanızı girin.");
+      } else if (code === "auth/invalid-email") {
+        msg = t("This email doesn't match the one the link was sent to.",
+                "Bu e-posta, bağlantının gönderildiği adresle eşleşmiyor.");
+        sendLinkBtn.disabled = false;
+        showStatus(authStatus, msg, true);
+        return;
+      } else {
+        msg = err.message || String(err);
+      }
+      showStatus(authStatus, msg, true);
+    }
+    pendingLink = null;
+    sendLinkBtnLabel(false);
+    sendLinkBtn.disabled = false;
+  }
   let purchases = null;
   let availablePackages = [];
   let selectedPackage = null;
+
+  if (!isConfigured) {
+    stepLoading.style.display = "none";
+    stepAuth.style.display = "block";
+  }
 
   if (isConfigured) {
     const app = initializeApp(CASTCAR_CONFIG.firebase);
     auth = getAuth(app);
 
     if (isSignInWithEmailLink(auth, window.location.href)) {
-      let email = window.localStorage.getItem("castcar-web-auth-email");
-      if (!email) {
-        email = window.prompt(t("Please confirm your email address:", "Güvenlik için e-posta adresinizi tekrar girin:"));
-      }
-      if (email) {
-        signInWithEmailLink(auth, email, window.location.href)
-          .then(() => {
-            window.localStorage.removeItem("castcar-web-auth-email");
-            window.history.replaceState({}, document.title, window.location.pathname);
-          })
-          .catch((err) => showStatus(authStatus, err.message, true));
+      pendingLink = window.location.href;
+      // Bağlantı kodu URL'de kalmasın; yenilemede tekrar denenip hata vermesin.
+      window.history.replaceState({}, document.title, window.location.pathname);
+      const saved = window.localStorage.getItem("castcar-web-auth-email");
+      if (saved) {
+        completeLinkSignIn(saved);
+      } else {
+        // Bağlantı başka bir tarayıcıda/cihazda açıldı: e-postayı sayfa içinde doğrulat.
+        sendLinkBtnLabel(true);
+        showStatus(authStatus, t(
+          "Enter the email address you requested the link with to finish signing in.",
+          "Girişi tamamlamak için bağlantıyı istediğiniz e-posta adresini girin."), false);
       }
     }
 
     onAuthStateChanged(auth, async (user) => {
+      stepLoading.style.display = "none";
       if (user) {
         stepAuth.style.display = "none";
         stepPlans.style.display = "block";
@@ -427,6 +481,10 @@
     e.preventDefault();
     const email = emailInput.value.trim().toLowerCase();
     if (!email) return;
+    if (pendingLink) {
+      await completeLinkSignIn(email);
+      return;
+    }
     if (!auth) {
       showStatus(authStatus, t("Web checkout is being configured. Please try again shortly.", "Web ödeme sistemi yapılandırılıyor. Lütfen biraz sonra tekrar deneyin."), true);
       return;
@@ -436,6 +494,10 @@
       const actionCodeSettings = {
         url: window.location.origin + "/premium.html",
         handleCodeInApp: true
+        // Uygulama castcar-app.firebaseapp.com bağlantılarını Universal Link olarak açar.
+        // Web akışı uygulamanın sahiplenmediği bu Firebase Hosting alanını kullanır ki iPhone'da sayfa açılsın.
+        // TODO(kota): Blaze planına geçilip test edilince açılacak.
+        // linkDomain: "castcar-auth.playgrator.com"
       };
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
       window.localStorage.setItem("castcar-web-auth-email", email);
@@ -464,6 +526,7 @@
       return;
     }
     try {
+      const Purchases = await getPurchasesLib();
       if (Purchases.isConfigured()) {
         purchases = Purchases.getSharedInstance();
         if (purchases.getAppUserId() !== user.uid) await purchases.changeUser(user.uid);
