@@ -72,6 +72,10 @@ nav.links a:hover { color: var(--ink); }
 }
 .btn:hover { background: #000; }
 .btn svg { width: 20px; height: 20px; fill: currentColor; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn.btn-alt { background: rgba(255,255,255,0.16); border: 1.5px solid rgba(255,255,255,0.75); }
+.btn.btn-alt:hover { background: rgba(255,255,255,0.26); }
+.card a.more { display: inline-block; margin-top: 10px; font-weight: 600; color: var(--green-2); text-decoration: none; }
 .note-light { font-size: 14px; opacity: 0.85; margin-top: 14px; }
 
 section { padding: 64px 0; }
